@@ -20,6 +20,7 @@ Antenna Logic:
 
 import asyncio
 import json
+import queue
 import threading
 import urllib.request
 import urllib.parse
@@ -60,6 +61,8 @@ HTTP_API_PORT = int(os.getenv('HTTP_API_PORT', '8766'))
 connected_clients: Set = set()
 monitor_thread = None
 is_running = True
+event_queue = queue.Queue()  # Queue for passing events from monitor thread to async broadcast
+main_loop = None  # Reference to the main asyncio event loop
 
 # Track processed tags to avoid duplicate processing
 # Key: EPC + antenna, Value: last processed timestamp
@@ -200,6 +203,8 @@ def process_tag(epc: str, antenna: int) -> Optional[Dict[str, Any]]:
         }
         
         recent_events.add(event)
+        # Queue the event for WebSocket broadcast
+        event_queue.put(event)
         return event
     else:
         print(f">>> Failed: {result['message']}")
@@ -217,6 +222,8 @@ def process_tag(epc: str, antenna: int) -> Optional[Dict[str, Any]]:
         }
         
         recent_events.add(event)
+        # Queue the event for WebSocket broadcast
+        event_queue.put(event)
         return event
 
 
@@ -280,6 +287,27 @@ async def broadcast_event(event: Dict[str, Any]):
     
     for client in disconnected:
         connected_clients.discard(client)
+
+
+async def event_queue_watcher():
+    """Watch the event queue and broadcast events to WebSocket clients"""
+    print("[WS] Event queue watcher started")
+    while is_running:
+        try:
+            # Check queue every 50ms
+            await asyncio.sleep(0.05)
+            
+            # Process all pending events
+            while not event_queue.empty():
+                try:
+                    event = event_queue.get_nowait()
+                    await broadcast_event(event)
+                    print(f"[WS] Broadcast event to {len(connected_clients)} clients")
+                except queue.Empty:
+                    break
+        except Exception as e:
+            print(f"[WS] Queue watcher error: {e}")
+            await asyncio.sleep(1)
 
 
 async def websocket_handler(websocket):
@@ -519,10 +547,15 @@ async def main():
             print("\nServer ready! Open the frontend app to view dashboard.")
             print("Press Ctrl+C to stop.\n")
             
+            # Start the event queue watcher as a background task
+            queue_watcher_task = asyncio.create_task(event_queue_watcher())
+            
             try:
                 await asyncio.Future()
             except asyncio.CancelledError:
                 pass
+            finally:
+                queue_watcher_task.cancel()
     else:
         print("\nWebSocket not available. Using HTTP API only.")
         print("Install websockets: pip install websockets")
