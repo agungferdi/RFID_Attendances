@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
-import Navigation from './components/Navigation';
 import StatsCards from './components/StatsCards';
 import ActiveEmployees from './components/ActiveEmployees';
 import RecentEvents from './components/RecentEvents';
@@ -106,8 +105,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen">
-      <Header connected={connected} />
-      <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
+      <Header connected={connected} activeTab={activeTab} onTabChange={setActiveTab} />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {activeTab === 'dashboard' && (
@@ -138,15 +136,6 @@ export default function App() {
           </div>
         )}
       </main>
-      
-      {/* Footer */}
-      <footer className="border-t border-slate-700/50 mt-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <p className="text-center text-sm text-slate-500">
-            Time Room - RFID Attendance Tracking System • Powered by URA4 Reader
-          </p>
-        </div>
-      </footer>
 
       {/* Stats Modal */}
       {modalType && (

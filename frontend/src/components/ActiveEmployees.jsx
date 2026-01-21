@@ -90,13 +90,13 @@ export default function ActiveEmployees({ employees, locations }) {
                     <p className="font-medium text-white truncate">
                       {emp.employees?.full_name || 'Unknown'}
                     </p>
-                    <p className="text-sm text-slate-400 truncate">
+                    <p className="text-sm text-slate-300 truncate">
                       {emp.employees?.position || '-'} • {emp.employees?.office || '-'}
                     </p>
                   </div>
                   
                   <div className="flex-shrink-0 text-right">
-                    <div className="flex items-center gap-1 text-sm text-slate-400">
+                    <div className="flex items-center gap-1 text-sm text-slate-300">
                       <Clock className="w-4 h-4" />
                       <span>In at {formatTime(emp.time_in)}</span>
                     </div>

@@ -56,7 +56,7 @@ export default function RecentEvents({ events }) {
           <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
           <h3 className="font-semibold text-white">Live Feed</h3>
         </div>
-        <p className="text-sm text-slate-400">Real-time RFID scan events</p>
+        <p className="text-sm text-slate-300">Real-time RFID scan events</p>
       </div>
       
       <div className="divide-y divide-slate-700/50 max-h-[500px] overflow-y-auto">
@@ -77,7 +77,7 @@ export default function RecentEvents({ events }) {
                   <p className="font-medium text-white truncate">
                     {event.employee.full_name}
                   </p>
-                  <p className="text-sm text-slate-400 truncate">
+                  <p className="text-sm text-slate-300 truncate">
                     {event.location?.area_name || `Antenna ${event.antenna}`}
                   </p>
                 </>
@@ -86,7 +86,7 @@ export default function RecentEvents({ events }) {
                   <p className="font-medium text-white truncate">
                     Unknown Card
                   </p>
-                  <p className="text-sm text-slate-500 font-mono truncate">
+                  <p className="text-sm text-slate-300 font-mono truncate">
                     {event.epc?.substring(0, 20)}...
                   </p>
                 </>
@@ -94,7 +94,7 @@ export default function RecentEvents({ events }) {
             </div>
             
             <div className="flex-shrink-0 text-right">
-              <p className="text-sm text-slate-400">{formatTime(event.timestamp)}</p>
+              <p className="text-sm text-slate-300">{formatTime(event.timestamp)}</p>
               <div className="mt-1">{getActionBadge(event.action)}</div>
             </div>
           </div>

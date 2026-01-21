@@ -61,7 +61,7 @@ export default function StatsCards({ stats, activeCount, locationsCount, onCardC
                 <Icon className="w-6 h-6 text-white" />
               </div>
             </div>
-            <div className="mt-3 text-xs text-slate-500">Click to view details →</div>
+            <div className="mt-3 text-xs text-slate-300">Click to view details →</div>
           </button>
         );
       })}
