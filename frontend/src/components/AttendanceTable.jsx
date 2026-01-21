@@ -4,14 +4,14 @@ import { getAttendanceLogs } from '../lib/supabase';
 
 function formatDateTime(isoString) {
   if (!isoString) return '-';
+  // Parse ISO string using UTC to avoid timezone issues
   const date = new Date(isoString);
-  return date.toLocaleString('en-US', { 
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit', 
-    minute: '2-digit',
-    hour12: false 
-  });
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const month = months[date.getUTCMonth()];
+  const day = date.getUTCDate();
+  const hours = date.getUTCHours().toString().padStart(2, '0');
+  const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+  return `${month} ${day}, ${hours}:${minutes}`;
 }
 
 function formatDuration(duration) {

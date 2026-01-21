@@ -3,19 +3,38 @@ import { User, MapPin, Clock } from 'lucide-react';
 
 function formatTime(isoString) {
   if (!isoString) return '-';
+  // Parse ISO string and extract time directly to avoid timezone issues
+  // Database stores local time, so we use UTC methods to read it as-is
   const date = new Date(isoString);
-  return date.toLocaleTimeString('en-US', { 
-    hour: '2-digit', 
-    minute: '2-digit',
-    hour12: false 
-  });
+  const hours = date.getUTCHours().toString().padStart(2, '0');
+  const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+  return `${hours}:${minutes}`;
 }
 
 function formatDuration(timeIn) {
   if (!timeIn) return '-';
+  
+  // Parse the stored time as UTC to get the raw values
   const start = new Date(timeIn);
   const now = new Date();
-  const diffMs = now - start;
+  
+  // Calculate difference using UTC values to avoid timezone issues
+  const startMs = Date.UTC(
+    start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate(),
+    start.getUTCHours(), start.getUTCMinutes(), start.getUTCSeconds()
+  );
+  const nowMs = Date.UTC(
+    now.getFullYear(), now.getMonth(), now.getDate(),
+    now.getHours(), now.getMinutes(), now.getSeconds()
+  );
+  
+  const diffMs = nowMs - startMs;
+  
+  // Handle edge case where duration is negative or very small
+  if (diffMs < 60000) {
+    return 'Just now';
+  }
+  
   const hours = Math.floor(diffMs / (1000 * 60 * 60));
   const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
   

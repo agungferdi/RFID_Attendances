@@ -3,13 +3,12 @@ import { ArrowRightCircle, ArrowLeftCircle, AlertCircle, Zap } from 'lucide-reac
 
 function formatTime(isoString) {
   if (!isoString) return '-';
+  // Parse ISO string and extract time directly to avoid timezone issues
   const date = new Date(isoString);
-  return date.toLocaleTimeString('en-US', { 
-    hour: '2-digit', 
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false 
-  });
+  const hours = date.getUTCHours().toString().padStart(2, '0');
+  const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+  const seconds = date.getUTCSeconds().toString().padStart(2, '0');
+  return `${hours}:${minutes}:${seconds}`;
 }
 
 function getActionIcon(action) {

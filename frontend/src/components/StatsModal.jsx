@@ -3,12 +3,11 @@ import { X, Users, TrendingUp, CheckCircle2, MapPin, Clock } from 'lucide-react'
 
 function formatTime(isoString) {
   if (!isoString) return '-';
+  // Parse ISO string and extract time directly to avoid timezone issues
   const date = new Date(isoString);
-  return date.toLocaleTimeString('en-US', { 
-    hour: '2-digit', 
-    minute: '2-digit',
-    hour12: false 
-  });
+  const hours = date.getUTCHours().toString().padStart(2, '0');
+  const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+  return `${hours}:${minutes}`;
 }
 
 export default function StatsModal({ type, onClose, activeEmployees, locations, stats, logs }) {
