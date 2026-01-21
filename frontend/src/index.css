@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+  @apply bg-gray-50 text-gray-900 antialiased;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 rounded;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded hover:bg-gray-400;
+}
+
+/* Table styling */
+.table-container {
+  @apply overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm;
+}
+
+/* Card styling */
+.card {
+  @apply bg-white rounded-xl border border-gray-200 shadow-sm p-6;
+}
+
+/* Badge styling */
+.badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.badge-in {
+  @apply bg-green-100 text-green-800;
+}
+
+.badge-out {
+  @apply bg-red-100 text-red-800;
+}
+
+.badge-completed {
+  @apply bg-blue-100 text-blue-800;
+}
+
+/* Animation for new entries */
+@keyframes highlight {
+  0% { background-color: rgb(254 249 195); }
+  100% { background-color: transparent; }
+}
+
+.animate-highlight {
+  animation: highlight 2s ease-out;
+}
+
+/* Status dot animation */
+.status-dot {
+  @apply w-2 h-2 rounded-full;
+}
+
+.status-dot.connected {
+  @apply bg-green-500 animate-pulse;
+}
+
+.status-dot.disconnected {
+  @apply bg-red-500;
+}
