@@ -8,7 +8,7 @@ A real-time RFID-based attendance tracking system using URA4 fixed reader. Track
 - 👤 **Employee identification**: Match RFID cards to employee profiles
 - 📍 **Multi-area support**: Track presence in different areas via different antennas
 - ⏱️ **Duration tracking**: Automatically calculate time spent in each area
-- 📊 **Dashboard**: Modern, clean UI with statistics and live feed
+- 📊 **Dashboard**: Modern dark theme UI with glass morphism design
 - 🗄️ **Supabase integration**: Cloud database for employees and attendance logs
 
 ## Architecture
@@ -16,7 +16,7 @@ A real-time RFID-based attendance tracking system using URA4 fixed reader. Track
 ```
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
 │   URA4 Reader   │────▶│  Python Backend │────▶│  React Frontend │
-│  (RFID Cards)   │     │   (server.py)   │     │   (Dashboard)   │
+│  (RFID Cards)   │     │    (main.py)    │     │   (Dashboard)   │
 └─────────────────┘     └────────┬────────┘     └─────────────────┘
                                  │
                                  ▼
@@ -24,6 +24,20 @@ A real-time RFID-based attendance tracking system using URA4 fixed reader. Track
                         │    Supabase     │
                         │   (Database)    │
                         └─────────────────┘
+```
+
+## Backend Structure
+
+```
+backend/
+├── main.py              # Entry point
+├── config.py            # Configuration settings
+├── ura4_monitor.py      # URA4 RFID reader polling
+├── tag_processor.py     # Tag processing and debouncing
+├── websocket_handler.py # WebSocket connections
+├── http_handler.py      # REST API endpoints
+├── supabase_client.py   # Database operations
+└── requirements.txt     # Dependencies
 ```
 
 ## How It Works

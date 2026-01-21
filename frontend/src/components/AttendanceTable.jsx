@@ -97,25 +97,25 @@ export default function AttendanceTable() {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
+      <div className="glass-card p-8">
         <div className="flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-          <span className="ml-3 text-gray-500">Loading attendance logs...</span>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
+          <span className="ml-3 text-slate-400">Loading attendance logs...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-      <div className="px-6 py-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
+    <div className="glass-card overflow-hidden">
+      <div className="px-6 py-4 border-b border-slate-700/50 flex items-center justify-between">
         <div>
-          <h3 className="font-semibold text-gray-900">Attendance History</h3>
-          <p className="text-sm text-gray-500">{logs.length} records</p>
+          <h3 className="font-semibold text-white">Attendance History</h3>
+          <p className="text-sm text-slate-400">{logs.length} records</p>
         </div>
         <button
           onClick={loadLogs}
-          className="px-3 py-1.5 text-sm font-medium text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+          className="px-4 py-2 text-sm font-medium bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 rounded-xl transition-colors"
         >
           Refresh
         </button>
@@ -123,10 +123,10 @@ export default function AttendanceTable() {
       
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
+          <thead className="bg-slate-800/50 border-b border-slate-700/50">
             <tr>
               <th 
-                className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                className="px-6 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-700/50"
                 onClick={() => handleSort('employee')}
               >
                 <div className="flex items-center gap-1">
@@ -135,7 +135,7 @@ export default function AttendanceTable() {
                 </div>
               </th>
               <th 
-                className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                className="px-6 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-700/50"
                 onClick={() => handleSort('location')}
               >
                 <div className="flex items-center gap-1">
@@ -144,7 +144,7 @@ export default function AttendanceTable() {
                 </div>
               </th>
               <th 
-                className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                className="px-6 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-700/50"
                 onClick={() => handleSort('time_in')}
               >
                 <div className="flex items-center gap-1">
@@ -153,7 +153,7 @@ export default function AttendanceTable() {
                 </div>
               </th>
               <th 
-                className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                className="px-6 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-700/50"
                 onClick={() => handleSort('time_out')}
               >
                 <div className="flex items-center gap-1">
@@ -161,11 +161,11 @@ export default function AttendanceTable() {
                   <ArrowUpDown className="w-3 h-3" />
                 </div>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">
                 Duration
               </th>
               <th 
-                className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                className="px-6 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-700/50"
                 onClick={() => handleSort('status')}
               >
                 <div className="flex items-center gap-1">
@@ -175,40 +175,40 @@ export default function AttendanceTable() {
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-slate-700/50">
             {sortedLogs.length === 0 ? (
               <tr>
-                <td colSpan="6" className="px-6 py-12 text-center text-gray-500">
-                  <Clock className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+                <td colSpan="6" className="px-6 py-12 text-center text-slate-400">
+                  <Clock className="w-8 h-8 mx-auto mb-2 text-slate-600" />
                   <p>No attendance records yet</p>
                 </td>
               </tr>
             ) : (
               sortedLogs.map((log) => (
-                <tr key={log.id} className="hover:bg-gray-50 transition-colors">
+                <tr key={log.id} className="hover:bg-slate-700/30 transition-colors">
                   <td className="px-6 py-4">
                     <div>
-                      <p className="font-medium text-gray-900">
+                      <p className="font-medium text-white">
                         {log.employees?.full_name || 'Unknown'}
                       </p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-slate-400">
                         {log.employees?.position || '-'}
                       </p>
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="text-gray-900">
+                    <span className="text-white">
                       {log.locations?.area_name || '-'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-gray-600">
+                  <td className="px-6 py-4 text-slate-300">
                     {formatDateTime(log.time_in)}
                   </td>
-                  <td className="px-6 py-4 text-gray-600">
+                  <td className="px-6 py-4 text-slate-300">
                     {formatDateTime(log.time_out)}
                   </td>
                   <td className="px-6 py-4">
-                    <span className="font-medium text-gray-900">
+                    <span className="font-medium text-emerald-400">
                       {formatDuration(log.duration)}
                     </span>
                   </td>

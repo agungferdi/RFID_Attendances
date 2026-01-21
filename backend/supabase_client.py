@@ -31,15 +31,12 @@ def init_supabase() -> bool:
     global supabase
     
     if not SUPABASE_URL or not SUPABASE_KEY:
-        print("[Supabase] ERROR: Missing SUPABASE_URL or SUPABASE_KEY in environment")
         return False
     
     try:
         supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-        print(f"[Supabase] Connected to: {SUPABASE_URL}")
         return True
-    except Exception as e:
-        print(f"[Supabase] Connection error: {e}")
+    except Exception:
         return False
 
 
@@ -51,20 +48,15 @@ def get_employee_by_epc(epc_code: str) -> Optional[Dict[str, Any]]:
     - id, full_name, office, position, address
     """
     if not supabase:
-        print("[Supabase] Client not initialized")
         return None
     
     try:
-        # Normalize EPC code (uppercase, strip whitespace)
         epc_code = epc_code.upper().strip()
-        
         response = supabase.table('employees').select('*').eq('epc_code', epc_code).execute()
-        
         if response.data and len(response.data) > 0:
             return response.data[0]
         return None
-    except Exception as e:
-        print(f"[Supabase] Error fetching employee: {e}")
+    except Exception:
         return None
 
 
@@ -80,12 +72,10 @@ def get_location_by_antenna(antenna_port: int) -> Optional[Dict[str, Any]]:
     
     try:
         response = supabase.table('locations').select('*').eq('antenna_port', antenna_port).execute()
-        
         if response.data and len(response.data) > 0:
             return response.data[0]
         return None
-    except Exception as e:
-        print(f"[Supabase] Error fetching location: {e}")
+    except Exception:
         return None
 
 
@@ -97,8 +87,7 @@ def get_all_locations() -> List[Dict[str, Any]]:
     try:
         response = supabase.table('locations').select('*').order('antenna_port').execute()
         return response.data or []
-    except Exception as e:
-        print(f"[Supabase] Error fetching locations: {e}")
+    except Exception:
         return []
 
 
@@ -122,8 +111,7 @@ def get_active_attendance(employee_id: str, location_id: int) -> Optional[Dict[s
         if response.data and len(response.data) > 0:
             return response.data[0]
         return None
-    except Exception as e:
-        print(f"[Supabase] Error checking active attendance: {e}")
+    except Exception:
         return None
 
 
@@ -149,8 +137,7 @@ def create_attendance_in(employee_id: str, location_id: int) -> Optional[Dict[st
         if response.data and len(response.data) > 0:
             return response.data[0]
         return None
-    except Exception as e:
-        print(f"[Supabase] Error creating attendance: {e}")
+    except Exception:
         return None
 
 
@@ -178,8 +165,7 @@ def complete_attendance(attendance_id: str) -> Optional[Dict[str, Any]]:
         if response.data and len(response.data) > 0:
             return response.data[0]
         return None
-    except Exception as e:
-        print(f"[Supabase] Error completing attendance: {e}")
+    except Exception:
         return None
 
 
@@ -203,8 +189,7 @@ def get_attendance_logs(limit: int = 100, employee_id: Optional[str] = None) -> 
         
         response = query.execute()
         return response.data or []
-    except Exception as e:
-        print(f"[Supabase] Error fetching attendance logs: {e}")
+    except Exception:
         return []
 
 
@@ -228,8 +213,7 @@ def get_active_employees_in_area(location_id: Optional[int] = None) -> List[Dict
         
         response = query.execute()
         return response.data or []
-    except Exception as e:
-        print(f"[Supabase] Error fetching active employees: {e}")
+    except Exception:
         return []
 
 
@@ -241,8 +225,7 @@ def get_all_employees() -> List[Dict[str, Any]]:
     try:
         response = supabase.table('employees').select('*').order('full_name').execute()
         return response.data or []
-    except Exception as e:
-        print(f"[Supabase] Error fetching employees: {e}")
+    except Exception:
         return []
 
 
@@ -270,8 +253,7 @@ def get_today_attendance_stats() -> Dict[str, Any]:
             'active_now': active,
             'completed': completed
         }
-    except Exception as e:
-        print(f"[Supabase] Error fetching stats: {e}")
+    except Exception:
         return {'total_entries': 0, 'active_now': 0, 'completed': 0}
 
 

@@ -6,15 +6,17 @@ import ActiveEmployees from './components/ActiveEmployees';
 import RecentEvents from './components/RecentEvents';
 import AttendanceTable from './components/AttendanceTable';
 import EmployeeList from './components/EmployeeList';
+import StatsModal from './components/StatsModal';
 import { useWebSocket } from './hooks/useBackend';
 import { 
   getActiveAttendance, 
   getLocations, 
   getTodayStats,
+  getAttendanceLogs,
   subscribeToAttendance 
 } from './lib/supabase';
 
-function Dashboard({ connected, events, activeEmployees, locations, stats }) {
+function Dashboard({ connected, events, activeEmployees, locations, stats, onCardClick }) {
   return (
     <div className="space-y-6">
       {/* Stats Cards */}
@@ -22,6 +24,7 @@ function Dashboard({ connected, events, activeEmployees, locations, stats }) {
         stats={stats} 
         activeCount={activeEmployees.length}
         locationsCount={locations.length}
+        onCardClick={onCardClick}
       />
       
       {/* Main Content Grid */}
@@ -29,7 +32,7 @@ function Dashboard({ connected, events, activeEmployees, locations, stats }) {
         {/* Left Column - Active Employees */}
         <div className="lg:col-span-2 space-y-6">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            <h2 className="text-lg font-semibold text-white mb-4">
               Currently in Areas
             </h2>
             <ActiveEmployees employees={activeEmployees} locations={locations} />
@@ -47,6 +50,7 @@ function Dashboard({ connected, events, activeEmployees, locations, stats }) {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [modalType, setModalType] = useState(null);
   const { 
     connected, 
     events, 
@@ -59,20 +63,23 @@ export default function App() {
   const [activeEmployees, setActiveEmployees] = useState([]);
   const [locations, setLocations] = useState([]);
   const [stats, setStats] = useState({ total_entries: 0, active_now: 0, completed: 0 });
+  const [logs, setLogs] = useState([]);
 
   // Load initial data from Supabase
   useEffect(() => {
     async function loadData() {
       try {
-        const [activeData, locationsData, statsData] = await Promise.all([
+        const [activeData, locationsData, statsData, logsData] = await Promise.all([
           getActiveAttendance(),
           getLocations(),
-          getTodayStats()
+          getTodayStats(),
+          getAttendanceLogs(50)
         ]);
         
         setActiveEmployees(activeData || []);
         setLocations(locationsData || []);
         setStats(statsData || { total_entries: 0, active_now: 0, completed: 0 });
+        setLogs(logsData || []);
       } catch (error) {
         console.error('Failed to load initial data:', error);
       }
@@ -81,9 +88,7 @@ export default function App() {
     loadData();
     
     // Subscribe to real-time changes
-    const unsubscribe = subscribeToAttendance((payload) => {
-      console.log('Attendance change:', payload);
-      // Reload data on changes
+    const unsubscribe = subscribeToAttendance(() => {
       loadData();
     });
     
@@ -95,8 +100,12 @@ export default function App() {
   const displayLocations = wsLocations.length > 0 ? wsLocations : locations;
   const displayStats = wsStats.total_entries > 0 ? wsStats : stats;
 
+  const handleCardClick = (type) => {
+    setModalType(type);
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <Header connected={connected} />
       <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
       
@@ -108,13 +117,14 @@ export default function App() {
             activeEmployees={displayActiveEmployees}
             locations={displayLocations}
             stats={displayStats}
+            onCardClick={handleCardClick}
           />
         )}
         
         {activeTab === 'attendance' && (
           <div className="space-y-6">
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              <h2 className="text-lg font-semibold text-white mb-4">
                 Attendance History
               </h2>
               <AttendanceTable />
@@ -130,13 +140,25 @@ export default function App() {
       </main>
       
       {/* Footer */}
-      <footer className="border-t border-gray-200 bg-white mt-8">
+      <footer className="border-t border-slate-700/50 mt-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <p className="text-center text-sm text-gray-500">
+          <p className="text-center text-sm text-slate-500">
             Time Room - RFID Attendance Tracking System • Powered by URA4 Reader
           </p>
         </div>
       </footer>
+
+      {/* Stats Modal */}
+      {modalType && (
+        <StatsModal
+          type={modalType}
+          onClose={() => setModalType(null)}
+          activeEmployees={displayActiveEmployees}
+          locations={displayLocations}
+          stats={displayStats}
+          logs={logs}
+        />
+      )}
     </div>
   );
 }

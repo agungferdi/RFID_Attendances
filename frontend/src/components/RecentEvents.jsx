@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRightCircle, ArrowLeftCircle, AlertCircle } from 'lucide-react';
+import { ArrowRightCircle, ArrowLeftCircle, AlertCircle, Zap } from 'lucide-react';
 
 function formatTime(isoString) {
   if (!isoString) return '-';
@@ -15,11 +15,11 @@ function formatTime(isoString) {
 function getActionIcon(action) {
   switch (action) {
     case 'IN':
-      return <ArrowRightCircle className="w-5 h-5 text-green-500" />;
+      return <ArrowRightCircle className="w-5 h-5 text-emerald-400" />;
     case 'OUT':
-      return <ArrowLeftCircle className="w-5 h-5 text-red-500" />;
+      return <ArrowLeftCircle className="w-5 h-5 text-rose-400" />;
     default:
-      return <AlertCircle className="w-5 h-5 text-yellow-500" />;
+      return <AlertCircle className="w-5 h-5 text-amber-400" />;
   }
 }
 
@@ -30,19 +30,19 @@ function getActionBadge(action) {
     case 'OUT':
       return <span className="badge badge-out">OUT</span>;
     default:
-      return <span className="badge bg-yellow-100 text-yellow-800">UNKNOWN</span>;
+      return <span className="badge bg-amber-500/20 text-amber-400 border border-amber-500/30">UNKNOWN</span>;
   }
 }
 
 export default function RecentEvents({ events }) {
   if (events.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
-        <div className="text-center text-gray-500">
-          <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-gray-100 flex items-center justify-center">
-            <ArrowRightCircle className="w-6 h-6 text-gray-400" />
+      <div className="glass-card p-8">
+        <div className="text-center text-slate-400">
+          <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-slate-700/50 flex items-center justify-center">
+            <Zap className="w-7 h-7 text-slate-500" />
           </div>
-          <p className="text-lg font-medium">No Recent Events</p>
+          <p className="text-lg font-medium text-slate-300">No Recent Events</p>
           <p className="text-sm mt-1">Scan events will appear here in real-time</p>
         </div>
       </div>
@@ -50,17 +50,20 @@ export default function RecentEvents({ events }) {
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-      <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-        <h3 className="font-semibold text-gray-900">Recent Scans</h3>
-        <p className="text-sm text-gray-500">Real-time RFID scan events</p>
+    <div className="glass-card overflow-hidden">
+      <div className="px-6 py-4 border-b border-slate-700/50">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <h3 className="font-semibold text-white">Live Feed</h3>
+        </div>
+        <p className="text-sm text-slate-400">Real-time RFID scan events</p>
       </div>
       
-      <div className="divide-y divide-gray-100 max-h-[500px] overflow-y-auto">
+      <div className="divide-y divide-slate-700/50 max-h-[500px] overflow-y-auto">
         {events.map((event, index) => (
           <div
             key={event.id || index}
-            className={`px-6 py-4 flex items-center gap-4 hover:bg-gray-50 transition-colors ${
+            className={`px-6 py-4 flex items-center gap-4 hover:bg-slate-700/30 transition-colors ${
               index === 0 ? 'animate-highlight' : ''
             }`}
           >
@@ -71,27 +74,27 @@ export default function RecentEvents({ events }) {
             <div className="flex-1 min-w-0">
               {event.employee ? (
                 <>
-                  <p className="font-medium text-gray-900 truncate">
+                  <p className="font-medium text-white truncate">
                     {event.employee.full_name}
                   </p>
-                  <p className="text-sm text-gray-500 truncate">
+                  <p className="text-sm text-slate-400 truncate">
                     {event.location?.area_name || `Antenna ${event.antenna}`}
                   </p>
                 </>
               ) : (
                 <>
-                  <p className="font-medium text-gray-900 truncate">
+                  <p className="font-medium text-white truncate">
                     Unknown Card
                   </p>
-                  <p className="text-sm text-gray-500 font-mono truncate">
-                    {event.epc?.substring(0, 24)}...
+                  <p className="text-sm text-slate-500 font-mono truncate">
+                    {event.epc?.substring(0, 20)}...
                   </p>
                 </>
               )}
             </div>
             
             <div className="flex-shrink-0 text-right">
-              <p className="text-sm text-gray-500">{formatTime(event.timestamp)}</p>
+              <p className="text-sm text-slate-400">{formatTime(event.timestamp)}</p>
               <div className="mt-1">{getActionBadge(event.action)}</div>
             </div>
           </div>

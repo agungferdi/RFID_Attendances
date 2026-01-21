@@ -6,61 +6,63 @@ import {
   TrendingUp 
 } from 'lucide-react';
 
-export default function StatsCards({ stats, activeCount, locationsCount }) {
+export default function StatsCards({ stats, activeCount, locationsCount, onCardClick }) {
   const cards = [
     {
+      id: 'active',
       title: 'Active Now',
       value: stats.active_now || activeCount || 0,
       icon: Users,
-      color: 'bg-green-500',
-      bgColor: 'bg-green-50',
-      textColor: 'text-green-700',
+      gradient: 'from-emerald-500 to-teal-500',
+      glow: 'glow-cyan',
     },
     {
-      title: 'Today\'s Entries',
+      id: 'entries',
+      title: "Today's Entries",
       value: stats.total_entries || 0,
       icon: TrendingUp,
-      color: 'bg-blue-500',
-      bgColor: 'bg-blue-50',
-      textColor: 'text-blue-700',
+      gradient: 'from-cyan-500 to-blue-500',
+      glow: 'glow-cyan',
     },
     {
+      id: 'completed',
       title: 'Completed',
       value: stats.completed || 0,
       icon: CheckCircle2,
-      color: 'bg-purple-500',
-      bgColor: 'bg-purple-50',
-      textColor: 'text-purple-700',
+      gradient: 'from-purple-500 to-pink-500',
+      glow: 'glow-purple',
     },
     {
+      id: 'areas',
       title: 'Areas',
       value: locationsCount || 0,
       icon: MapPin,
-      color: 'bg-orange-500',
-      bgColor: 'bg-orange-50',
-      textColor: 'text-orange-700',
+      gradient: 'from-orange-500 to-red-500',
+      glow: 'glow-pink',
     },
   ];
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      {cards.map((card, index) => {
+      {cards.map((card) => {
         const Icon = card.icon;
         return (
-          <div
-            key={index}
-            className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 hover:shadow-md transition-shadow"
+          <button
+            key={card.id}
+            onClick={() => onCardClick && onCardClick(card.id)}
+            className={`glass-card p-6 text-left hover:scale-105 transition-all duration-300 cursor-pointer group ${card.glow}`}
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500">{card.title}</p>
-                <p className="text-3xl font-bold text-gray-900 mt-1">{card.value}</p>
+                <p className="text-sm font-medium text-slate-400">{card.title}</p>
+                <p className="text-4xl font-bold text-white mt-1">{card.value}</p>
               </div>
-              <div className={`${card.bgColor} p-3 rounded-xl`}>
-                <Icon className={`w-6 h-6 ${card.textColor}`} />
+              <div className={`p-3 rounded-xl bg-gradient-to-br ${card.gradient} shadow-lg group-hover:scale-110 transition-transform`}>
+                <Icon className="w-6 h-6 text-white" />
               </div>
             </div>
-          </div>
+            <div className="mt-3 text-xs text-slate-500">Click to view details →</div>
+          </button>
         );
       })}
     </div>
