@@ -265,11 +265,15 @@ def process_tag_scan(epc_code: str, antenna_port: int) -> Dict[str, Any]:
     1. Look up employee by EPC code
     2. Look up location by antenna port
     3. Check if employee has active attendance at this location
-       - If YES: Complete the attendance (OUT)
+       - If YES and more than 10 seconds since IN: Complete the attendance (OUT)
+       - If YES but within 10 seconds: Ignore (prevent accidental OUT)
        - If NO: Create new attendance (IN)
     
     Returns result with action taken and employee/location info
     """
+    # Minimum seconds before allowing OUT after IN
+    MIN_SECONDS_BEFORE_OUT = 10
+    
     result = {
         'success': False,
         'action': None,  # 'IN' or 'OUT'
@@ -299,6 +303,35 @@ def process_tag_scan(epc_code: str, antenna_port: int) -> Dict[str, Any]:
     active_attendance = get_active_attendance(employee['id'], location['id'])
     
     if active_attendance:
+        # Check if enough time has passed since check-in
+        time_in_str = active_attendance.get('time_in')
+        if time_in_str:
+            try:
+                # Parse the time_in from database
+                # Remove timezone suffix for naive datetime comparison
+                time_in_clean = time_in_str
+                for suffix in ['+00:00', 'Z', '+00']:
+                    time_in_clean = time_in_clean.replace(suffix, '')
+                # Also remove any microseconds timezone like +07:00
+                if '+' in time_in_clean:
+                    time_in_clean = time_in_clean.split('+')[0]
+                
+                time_in = datetime.fromisoformat(time_in_clean)
+                now = datetime.now()
+                
+                seconds_since_in = (now - time_in).total_seconds()
+                print(f"[DEBUG] time_in: {time_in}, now: {now}, seconds_since_in: {seconds_since_in}")
+                
+                if seconds_since_in < MIN_SECONDS_BEFORE_OUT:
+                    # Too soon - ignore this scan to prevent accidental OUT
+                    result['message'] = f'Ignored: {employee["full_name"]} checked in {seconds_since_in:.0f}s ago (min {MIN_SECONDS_BEFORE_OUT}s)'
+                    return result
+            except Exception as e:
+                # If we can't parse the time, allow the OUT
+                print(f"[DEBUG] Time parsing error: {e}, time_in_str: {time_in_str}")
+                pass
+                pass
+        
         # Employee is leaving - complete the attendance
         completed = complete_attendance(active_attendance['id'])
         if completed:

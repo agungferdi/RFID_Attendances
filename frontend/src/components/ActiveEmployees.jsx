@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, MapPin, Clock } from 'lucide-react';
 
 function formatTime(isoString) {
@@ -45,6 +45,17 @@ function formatDuration(timeIn) {
 }
 
 export default function ActiveEmployees({ employees, locations }) {
+  // Force re-render every 30 seconds to update durations
+  const [, setTick] = useState(0);
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTick(t => t + 1);
+    }, 10000); // Update every 30 seconds
+    
+    return () => clearInterval(interval);
+  }, []);
+
   // Group employees by location
   const groupedByLocation = {};
   
