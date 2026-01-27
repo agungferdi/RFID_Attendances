@@ -25,12 +25,16 @@ def should_process(epc: str, antenna: int) -> bool:
 
 
 def process_tag(epc: str, antenna: int) -> Optional[Dict[str, Any]]:
-    """Process a tag scan and return event data"""
+    """Process a tag scan and return event data.
+    Only returns events for registered employees - unknown tags are ignored.
+    """
     if not should_process(epc, antenna):
         return None
     
     result = db.process_tag_scan(epc, antenna)
     
+    # Only broadcast events for registered employees
+    # Unknown tags are silently ignored (not sent to attendance_logs or frontend)
     if result['success']:
         return {
             'id': str(time.time()),
@@ -51,13 +55,6 @@ def process_tag(epc: str, antenna: int) -> Optional[Dict[str, Any]]:
             'message': result['message']
         }
     else:
-        return {
-            'id': str(time.time()),
-            'timestamp': datetime.now().isoformat(),
-            'action': 'UNKNOWN',
-            'epc': epc,
-            'antenna': antenna,
-            'employee': None,
-            'location': None,
-            'message': result['message']
-        }
+        # Unknown tag or error - don't broadcast event
+        # This ensures only registered employees appear in the system
+        return None

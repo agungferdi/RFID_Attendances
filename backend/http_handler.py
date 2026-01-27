@@ -56,6 +56,34 @@ class HTTPHandler(BaseHTTPRequestHandler):
         
         if path == '/api/clear':
             self.send_json({'success': True})
+        elif path == '/api/employees/register':
+            try:
+                content_length = int(self.headers.get('Content-Length', 0))
+                body = self.rfile.read(content_length)
+                data = json.loads(body.decode('utf-8'))
+                
+                # Validate required fields
+                if not data.get('epc_code') or not data.get('full_name'):
+                    self.send_json({'error': 'EPC code and full name are required'}, 400)
+                    return
+                
+                # Create employee
+                result = db.create_employee(
+                    epc_code=data['epc_code'],
+                    full_name=data['full_name'],
+                    office=data.get('office'),
+                    position=data.get('position'),
+                    address=data.get('address')
+                )
+                
+                if result.get('success'):
+                    self.send_json(result, 201)
+                else:
+                    self.send_json({'error': result.get('error', 'Failed to create employee')}, 400)
+            except json.JSONDecodeError:
+                self.send_json({'error': 'Invalid JSON'}, 400)
+            except Exception as e:
+                self.send_json({'error': str(e)}, 500)
         else:
             self.send_json({'error': 'Not found'}, 404)
     

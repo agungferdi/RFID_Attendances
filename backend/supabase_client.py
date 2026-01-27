@@ -318,5 +318,56 @@ def process_tag_scan(epc_code: str, antenna_port: int) -> Dict[str, Any]:
             result['message'] = f"{employee['full_name']} checked IN to {location['area_name']}"
         else:
             result['message'] = 'Failed to create attendance record'
-    
+
     return result
+
+
+def create_employee(epc_code: str, full_name: str, office: str = None, 
+                   position: str = None, address: str = None) -> Dict[str, Any]:
+    """
+    Create a new employee in the database
+
+    Args:
+        epc_code: RFID card EPC code (must be unique)
+        full_name: Employee's full name (required)
+        office: Office location (optional)
+        position: Job position (optional)
+        address: Home address (optional)
+
+    Returns:
+        Dictionary with success status and employee data
+    """
+    if not supabase:
+        return {'success': False, 'error': 'Supabase not initialized'}
+
+    try:
+        # Normalize EPC code to uppercase
+        epc_code_upper = epc_code.upper().strip()
+    
+        # Check if EPC already exists
+        existing = get_employee_by_epc(epc_code_upper)
+        if existing:
+            return {
+                'success': False,
+                'error': f'EPC code already registered to {existing["full_name"]}'
+            }
+    
+        # Insert new employee
+        response = supabase.table('employees').insert({
+            'epc_code': epc_code_upper,
+            'full_name': full_name.strip(),
+            'office': office.strip() if office else None,
+            'position': position.strip() if position else None,
+            'address': address.strip() if address else None
+        }).execute()
+    
+        if response.data and len(response.data) > 0:
+            return {
+                'success': True,
+                'employee': response.data[0]
+            }
+        else:
+            return {'success': False, 'error': 'Failed to create employee'}
+        
+    except Exception as e:
+        return {'success': False, 'error': str(e)}
